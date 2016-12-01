@@ -3,6 +3,8 @@
 class Router
 {
 
+	private static $instance;
+
 	protected $uri;
 	protected $route;
 	protected $function;
@@ -24,6 +26,13 @@ class Router
 		$this->uri = $this->_parseUri();
 		$this->registerController();
 		return $this;
+	}
+
+	public static function init()
+	{
+		static $instance = NULL;
+		if ($instance === NULL) $instance = new self();
+		return $instance;
 	}
 
 	public function registerController()
@@ -105,6 +114,12 @@ class Router
 		$path = trim($path, "/");
 		$method = (isset($options['method']) && array_key_exists(strtoupper($options['method']), self::$_routes)) ? strtoupper($options['method']) : 'GET' ;
 		self::$_routes[$method][$path] = $options;
+	}
+
+	public static function currentRoute()
+	{
+		$router = self::init();
+		return $router->route['route'];
 	}
 
 }

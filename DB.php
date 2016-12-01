@@ -42,6 +42,12 @@ class DB
 		return $statement->fetchObject($model);
 	}
 
+	public static function getOne($model, $sql, $bindings = [])
+	{
+		$statement = self::query($sql, $bindings);
+		return $statement->fetchObject($model);
+	}
+
 	public static function get($sql, $bindings = [])
 	{
 		$statement = self::query($sql, $bindings);

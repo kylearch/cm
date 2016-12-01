@@ -5,7 +5,9 @@ CREATE TABLE `users` (
 	`email` VARCHAR(255) NOT NULL,
 	`password` VARCHAR(255) NOT NULL,
 	`numComments` INT(11) UNSIGNED NOT NULL DEFAULT 0,
-	PRIMARY KEY (`id`)
+	PRIMARY KEY (`id`),
+	UNIQUE (`username`),
+	UNIQUE (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 # Comments Table

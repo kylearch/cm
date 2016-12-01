@@ -4,7 +4,7 @@ namespace Models;
 
 use DB;
 
-class Comment
+class Comment extends Model
 {
 
 	public static $table = 'comments';
@@ -18,20 +18,12 @@ class Comment
 	public $capitalLetters;
 	public $created_at;
 
-	public function __construct($values = [])
-	{
-		foreach ($values as $property => $value)
-		{
-			// Some validation on these fields would be prudent so they match their DB column type at very least
-			if (property_exists($this, $property)) $this->{$property} = $value;
-		}
-	}
-
 	public function store()
 	{
+		$userId = $_SESSION['userId'];
 		$this->created_at = date('Y-m-d h:i:s');
 		$values = [
-			'userId'            => 1, // Need to grab from session
+			'userId'            => $userId,
 			'comment'           => $this->comment,
 			'length'            => $this->getLength(),
 			'averageWordLength' => $this->getAverageWordLength(),
@@ -45,6 +37,13 @@ class Comment
 			(:userId, :comment, :length, :averageWordLength, :twoLetterWords, :capitalLetters, :created_at)',
 			$values
 		);
+		DB::query('UPDATE `users` SET `numComments` = `numComments` + 1 WHERE `id` = :userId', ['userId' => $userId]);
+	}
+
+	public function delete()
+	{
+		DB::query('UPDATE `users` SET `numComments` = `numComments` - 1 WHERE `id` = :userId', ['userId' => $this->userId]);
+		DB::query('DELETE FROM `comments` WHERE `id` = :commentId', ['commentId' => $this->id]);
 	}
 
 	public function getLength()

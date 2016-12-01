@@ -10,6 +10,14 @@ use Models\Comment;
 class CommentController
 {
 
+	public function __construct()
+	{
+		if ( ! isset($_SESSION['userId']))
+		{
+			header('Location: /users/login');
+		}
+	}
+
 	public function index()
 	{
 		$comments = DB::getObject('Models\Comment',
@@ -33,17 +41,21 @@ class CommentController
 		header('Location: /comments');
 	}
 
-	public function delete()
+	public function delete($id)
 	{
-
+		$comment = DB::find('Models\Comment', $id);
+		if ($comment) $comment->delete();
+		$redirect = isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : '/comments' ;
+		header("Location: {$redirect}");
 	}
 
 	public function similar($id)
 	{
 		$comment = DB::find('Models\Comment', $id);
-		View::give('comment', $comment);
+		$comments = $comment->similar();
+		View::give('comments', $comments);
 		View::give('pageTitle', 'Similar Comments');
-		View::render('comments/similar');
+		View::render('comments/index');
 	}
 
 }
