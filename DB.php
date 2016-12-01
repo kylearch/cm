@@ -35,6 +35,13 @@ class DB
 		return $statement;
 	}
 
+	public static function find($model, $id)
+	{
+		$table = $model::$table;
+		$statement = self::query('SELECT * FROM `' . $table . '` WHERE `id` = :id', ['id' => $id]);
+		return $statement->fetchObject($model);
+	}
+
 	public static function get($sql, $bindings = [])
 	{
 		$statement = self::query($sql, $bindings);

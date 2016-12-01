@@ -1,5 +1,5 @@
 <?php View::render('partials/header'); ?>
-<?php foreach ($comments as $comment): ?>
+<?php foreach ($comment->similar() as $comment): ?>
 	<article class="panel panel-default row">
 		<div class="panel-body">
 			<div class="col-xs-12 col-md-8">
