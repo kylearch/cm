@@ -13,11 +13,6 @@
 				<div class="form-group">
 					<input type="submit" value="Login" class="btn btn-default">
 				</div>
-				<?php if (isset($error) && $error === 'invalid'): ?>
-				<div class="form-group">
-					<p class="text-danger">Invalid Login Information</p>
-				</div>
-				<?php endif; ?>
 			</form>
 		</div>
 	</div>

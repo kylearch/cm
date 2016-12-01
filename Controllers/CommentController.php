@@ -7,15 +7,13 @@ use DB;
 
 use Models\Comment;
 
-class CommentController
+class CommentController extends Controller
 {
 
 	public function __construct()
 	{
-		if ( ! isset($_SESSION['userId']))
-		{
-			header('Location: /users/login');
-		}
+		parent::__construct();
+		if ( ! isset($_SESSION['userId'])) header('Location: /users/login');
 	}
 
 	public function index()
@@ -30,21 +28,30 @@ class CommentController
 
 	public function create()
 	{
-		View::give('page_title', 'Page Title');
+		View::give('pageTitle', 'New Comment');
 		View::render('comments/create');
 	}
 
 	public function store()
 	{
 		$comment = new Comment(['comment' => $_POST['comment']]);
-		$comment->store();
-		header('Location: /comments');
+		if ($comment->isValid())
+		{
+			$comment->store();
+			header('Location: /comments');
+		}
+		else
+		{
+			$_SESSION['error'] = 'Missing Required Fields';
+			header('Location: /comments/create');
+		}
 	}
 
 	public function delete($id)
 	{
 		$comment = DB::find('Models\Comment', $id);
 		if ($comment) $comment->delete();
+		else $_SESSION['error'] = 'Comment not found';
 		$redirect = isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : '/comments' ;
 		header("Location: {$redirect}");
 	}
@@ -52,10 +59,18 @@ class CommentController
 	public function similar($id)
 	{
 		$comment = DB::find('Models\Comment', $id);
-		$comments = $comment->similar();
-		View::give('comments', $comments);
-		View::give('pageTitle', 'Similar Comments');
-		View::render('comments/index');
+		if ($comment)
+		{
+			$comments = $comment->similar();
+			View::give('comments', $comments);
+			View::give('pageTitle', 'Similar Comments');
+			View::render('comments/index');
+		}
+		else
+		{
+			$_SESSION['error'] = 'Comment not found';
+			header('Location: /comments');
+		}
 	}
 
 }

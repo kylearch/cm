@@ -24,4 +24,13 @@
 						<a href="/users/create">Create User</a>
 					<?php endif; ?>
 				</div>
+			</div>
+			<div class="row">
+				<?php if (isset($error)): ?>
+				<div class="alert alert-danger">
+					<p><?= $error; ?></p>
+				</div>
+				<?php endif; ?>
+			</div>
+			<div class="row">
 				<div class="col-xs-12">

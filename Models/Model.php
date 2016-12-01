@@ -12,4 +12,14 @@ class Model
 			if (property_exists($this, $property)) $this->{$property} = $value;
 		}
 	}
+
+	public function isValid()
+	{
+		$valid = TRUE;
+		foreach ($this::$required as $field)
+		{
+			if (empty($this->{$field})) $valid = FALSE;
+		}
+		return $valid;
+	}
 }

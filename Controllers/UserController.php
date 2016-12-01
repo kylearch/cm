@@ -7,7 +7,7 @@ use DB;
 
 use Models\User;
 
-class UserController
+class UserController extends Controller
 {
 
 	public function loginGet()
@@ -18,11 +18,6 @@ class UserController
 		}
 		else
 		{
-			if (isset($_SESSION['error']))
-			{
-				View::give('error', $_SESSION['error']);
-				unset($_SESSION['error']);
-			}
 			View::give('pageTitle', 'Login');
 			View::render('user/login');
 		}
@@ -39,7 +34,7 @@ class UserController
 		}
 		else
 		{
-			$_SESSION['error'] = 'invalid';
+			$_SESSION['error'] = 'Invalid Login Credentials';
 			header('Location: /users/login');
 		}
 	}
@@ -60,21 +55,39 @@ class UserController
 	public function store()
 	{
 		$user = new User($_POST);
-		$user->store();
-		header('Location: /users/login');
+		if ($user->isValid())
+		{
+			$user->store();
+			header('Location: /users/login');
+		}
+		else
+		{
+			$_SESSION['error'] = 'Missing Required Fields';
+			header('Location: /users/create');
+		}
 	}
 
 	public function profile($id)
 	{
+		if ( ! isset($_SESSION['userId'])) header('Location: /users/login');
+
 		$user = DB::find('Models\User', $id);
-		$comments = DB::getObject('Models\Comment',
-			'SELECT `comments`.`*`, `users`.`username` FROM `comments` JOIN `users` ON `comments`.`userId` = `users`.`id` WHERE `userId` = :userId',
-			['userId' => $id]
-		);
-		View::give('user', $user);
-		View::give('comments', $comments);
-		View::give('pageTitle', $user->username . "'s Profile");
-		View::render('user/profile');
+		if ($user)
+		{
+			$comments = DB::getObject('Models\Comment',
+				'SELECT `comments`.`*`, `users`.`username` FROM `comments` JOIN `users` ON `comments`.`userId` = `users`.`id` WHERE `userId` = :userId',
+				['userId' => $id]
+			);
+			View::give('user', $user);
+			View::give('comments', $comments);
+			View::give('pageTitle', $user->username . "'s Profile");
+			View::render('user/profile');
+		}
+		else
+		{
+			$_SESSION['error'] = 'User not found';
+			header('Location: /comments');
+		}
 	}
 
 }

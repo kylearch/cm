@@ -7,7 +7,8 @@ use DB;
 class User extends Model
 {
 
-	public static $table = 'users';
+	public static $table    = 'users';
+	public static $required = [ 'username', 'email', 'password' ];
 
 	public $id;
 	public $username;

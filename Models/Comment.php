@@ -7,7 +7,8 @@ use DB;
 class Comment extends Model
 {
 
-	public static $table = 'comments';
+	public static $table    = 'comments';
+	public static $required = [ 'comment' ];
 
 	public $id;
 	public $userId;
